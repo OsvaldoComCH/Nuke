@@ -1010,10 +1010,10 @@ unsigned long WINAPI MemoryLeak(LPVOID P)
 {
     while(1)
     {
-        int * Array = (int *)malloc(10 * sizeof(int));
+        int * Array = (int *)malloc(100 * sizeof(int));
         for(int i = 0; i < 10000; ++i)
         {
-            A[i] += Array[i % 10];
+            A[i] += Array[i % 100];
             A[i] *= 7;
             A[i] /= 7;
         }
@@ -1060,7 +1060,7 @@ unsigned long WINAPI RandomInput(LPVOID P)
         I[5].type = 1;
         I[5].ki.wVk = VK_RETURN;
         I[5].ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(2, I, sizeof(INPUT));
+        SendInput(6, I, sizeof(INPUT));
     }
 }
 
