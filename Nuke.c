@@ -1049,7 +1049,7 @@ int main()
         I[1].mi.dx = (rand() % x);
         I[1].mi.dy = (rand() % y);
         I[1].mi.mouseData = 0;
-        I[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
+        I[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
         I[2].type = 0;
         I[2].mi.mouseData = 0;
         I[2].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
