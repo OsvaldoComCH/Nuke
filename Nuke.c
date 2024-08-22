@@ -1038,16 +1038,17 @@ int main()
     SetWaitableTimer(Timer, &DueTime, 5, NULL, NULL, 0);
     while (1)
     {
+        int x = GetSystemMetrics(SM_CXSCREEN);
+        int y = GetSystemMetrics(SM_CYSCREEN);
+        SetCursorPos(rand() % x,rand() % y);
         int key = (rand() % 254) + 1;
         INPUT I[6];
         I[0].type = 1;
         I[0].ki.wVk = key;
         I[0].ki.dwFlags = (GetAsyncKeyState(key) & 0x8000) >> 14;
         I[1].type = 0;
-        I[1].mi.dx = rand() & 0xFFFF;
-        I[1].mi.dy = rand() & 0xFFFF;
         I[1].mi.mouseData = 0;
-        I[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+        I[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
         I[2].type = 0;
         I[2].mi.mouseData = 0;
         I[2].mi.dwFlags = MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
